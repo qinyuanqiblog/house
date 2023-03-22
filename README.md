@@ -2,7 +2,7 @@
 
 ## 最终效果
 
-![效果图](https://segmentfault.com/img/remote/1460000043572281)
+![效果图](https://api2.mubu.com/v3/document_image/f6962e12-283b-47e8-831d-b29ea553c618-2331693.jpg)
 
 
 ## 使用方法
