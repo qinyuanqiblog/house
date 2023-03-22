@@ -1,12 +1,9 @@
 const puppeteer = require('puppeteer');
-const fs = require('fs');
 
 const axiosRequest = require('./utils/request');
 const Mysql = require('./mysql');
 const Log = require('./utils/log');
 const dateTool = require('./utils/date');
-
-
 const log = new Log()
 const mysql = new Mysql()
 
@@ -97,27 +94,6 @@ module.exports = class Reptile {
   this.startFirstLoop()
  }
 
- startFirstLoop(){
-  const page = this.page
-  this.firstLoopTime = setInterval(async() => {
-    log.info('开始第第一轮爬取流程')
-    log.info(`总数：${this.total},正在爬第${this.totalPage}页的数据,总共爬取了${this.count}条数据`)
-    this.totalPage ++
-    // 第一轮结束，开启第二轮的爬取
-    if(this.totalPage === (this.currentLoopPage+1)){
-      page.click(`#AspNetPager1 > span:nth-last-of-type(1)`, {delay: 100})
-      await page.waitForTimeout(2000)
-      clearInterval(this.firstLoopTime)
-      this.normalLoopFn()
-      const result = await this.responseDataHandle()
-      this.saveDB(result)
-      return false
-    }
-    page.click(`#AspNetPager1 > a:nth-of-type(${ this.totalPage})`, {delay: 100})
-    const result = await this.responseDataHandle()
-    this.saveDB(result)
-  }, 2000)
- }
 
  /**
   * 返回数据处理
@@ -184,31 +160,54 @@ module.exports = class Reptile {
   mysql.openConnection()
   mysql.batchInsert(source)
  }
-//  第二次后開始的逻辑，他們的頁面结构不一样
-normalLoopFn(){
+
+ 
+  startFirstLoop(){
   const page = this.page
-  this.normalLoop = setInterval(async() => {
-    log.info('开始第正常爬取流程')
+  this.firstLoopTime = setInterval(async() => {
+    log.info('开始第第一轮爬取流程')
     log.info(`总数：${this.total},正在爬第${this.totalPage}页的数据,总共爬取了${this.count}条数据`)
-    if(this.totalPage === this.totalLoop){
-      clearInterval(this.normalLoop)
-      log.success('爬取完毕了~')
-      return false
-    }
-    let currentCount = this.totalPage % this.currentLoopPage
-    if(!currentCount){
+    this.totalPage ++
+    // 第一轮结束，开启第二轮的爬取
+    if(this.totalPage === (this.currentLoopPage+1)){
       page.click(`#AspNetPager1 > span:nth-last-of-type(1)`, {delay: 100})
       await page.waitForTimeout(2000)
+      clearInterval(this.firstLoopTime)
+      this.normalLoopFn()
       const result = await this.responseDataHandle()
       this.saveDB(result)
-    }else{
-      page.click(`#AspNetPager1 > a:nth-of-type(${ currentCount + 1})`, {delay: 100})
-      await page.waitForTimeout(2000)
-      const result = await this.responseDataHandle()
-      this.saveDB(result)
+      return false
     }
-    this.totalPage ++
-  }, 3000);
-}
+    page.click(`#AspNetPager1 > a:nth-of-type(${ this.totalPage})`, {delay: 100})
+    const result = await this.responseDataHandle()
+    this.saveDB(result)
+  }, 2000)
+  }
+  //  第二次后開始的逻辑，他們的頁面结构不一样
+  normalLoopFn(){
+    const page = this.page
+    this.normalLoop = setInterval(async() => {
+      log.info('开始第正常爬取流程')
+      log.info(`总数：${this.total},正在爬第${this.totalPage}页的数据,总共爬取了${this.count}条数据`)
+      if(this.totalPage === this.totalLoop){
+        clearInterval(this.normalLoop)
+        log.success('爬取完毕了~')
+        return false
+      }
+      let currentCount = this.totalPage % this.currentLoopPage
+      if(!currentCount){
+        page.click(`#AspNetPager1 > span:nth-last-of-type(1)`, {delay: 100})
+        await page.waitForTimeout(2000)
+        const result = await this.responseDataHandle()
+        this.saveDB(result)
+      }else{
+        page.click(`#AspNetPager1 > a:nth-of-type(${ currentCount + 1})`, {delay: 100})
+        await page.waitForTimeout(2000)
+        const result = await this.responseDataHandle()
+        this.saveDB(result)
+      }
+      this.totalPage ++
+    }, 3000);
+  }
 
 }
