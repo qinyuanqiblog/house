@@ -10,6 +10,7 @@
 - 下载项目
 - 更新依赖
 - 导入sql文件
+- 更改数据库地址和帐号密码： mysql文件
 - 执行命令  node index
 
 ```shell
@@ -18,6 +19,16 @@ git clone https://github.com/qinyuanqiblog/house.git
 
 ```shell
 npm install
+```
+
+```js
+ // mysql.js  修改成自己本地的
+ const connection = this.mysql.createConnection({
+  host     : 'localhost',	//连接的数据库地址。（默认:localhost）
+  user     : 'root',		//mysql的连接用户名
+  password : 'root',		// 对应用户的密码
+  port: '3306',
+ });
 ```
 
 
