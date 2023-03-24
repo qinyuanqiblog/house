@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "axios": "^0.27.2",
+    "axios": "^1.3.4",
     "chalk": "^4.1.0",
     "puppeteer": "^19.7.4"
   },
