@@ -21,6 +21,10 @@ git clone https://github.com/qinyuanqiblog/house.git
 npm install
 ```
 
+``db
+我的设计里面是有一个数据库: house_info, 请自己先创建一个数据库
+```
+
 ```js
  // mysql.js  修改成自己本地的
  const connection = this.mysql.createConnection({
